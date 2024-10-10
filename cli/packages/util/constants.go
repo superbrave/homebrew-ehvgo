@@ -8,6 +8,5 @@ const (
 	DOKTERONLINE_SLUG = "DOK"
 	SEEMENOPAUSE_SLUG = "SMNP"
 
-	INFISICAL_CLI_CONTAINER         = "ghcr.io/superbrave/infisical-cli"
-	INFISICAL_CLI_CONTAINER_VERSION = "latest"
+	INFISICAL_CLI_IMAGE = "ghcr.io/superbrave/infisical-cli"
 )

@@ -1,11 +1,18 @@
 package cmd
 
 import (
+	"context"
 	"ehvg/packages/util"
+	"encoding/json"
 	"fmt"
+	"io"
 
+	"github.com/docker/docker/api/types/image"
+	"github.com/docker/docker/client"
 	"github.com/spf13/cobra"
 )
+
+var event *util.DockerEvent
 
 var contextCmd = &cobra.Command{
 	Use:   "context",
@@ -21,13 +28,40 @@ var setContextCmd = &cobra.Command{
 
 func SetContext(cmd *cobra.Command, args []string) {
 	if util.HasDocker() {
-		context, err := cmd.Flags().GetString("context")
+		projectContext, err := cmd.Flags().GetString("context")
 
 		if err != nil {
 			util.PrintError(err.Error())
 		}
 
-		fmt.Println(context)
+		docker, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+
+		if err != nil {
+			util.PrintError("Unable to create Docker client")
+		}
+
+		pullResult, err := docker.ImagePull(context.Background(), util.GetInfisicalmage("latest"), image.PullOptions{})
+
+		if err != nil {
+			pullResult.Close()
+			util.PrintError(err.Error())
+		}
+
+		events := json.NewDecoder(pullResult)
+
+		var event util.DockerEvent
+
+		for {
+			if err := events.Decode(&event); err != nil {
+				if err == io.EOF {
+					break
+				}
+			}
+
+			fmt.Printf("EVENT: %+v\n", event)
+		}
+
+		fmt.Println(projectContext)
 	}
 }
 
