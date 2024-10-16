@@ -1,22 +1,16 @@
 package util
 
 import (
-	"fmt"
 	"os"
+	"runtime"
 
 	"github.com/fatih/color"
 )
 
-func PrintMessageAndExit(messages ...string) {
-	if len(messages) > 0 {
-		for _, message := range messages {
-			fmt.Fprintln(os.Stderr, message)
-		}
+func PrintError(e error, throwPanic bool) {
+	color.New(color.FgRed).Fprintf(os.Stderr, "%v\n", e.Error())
+
+	if throwPanic {
+		runtime.Goexit()
 	}
-
-	os.Exit(1)
-}
-
-func PrintError(e string) {
-	color.New(color.FgRed).Fprintf(os.Stderr, "error:%v\n", e)
 }

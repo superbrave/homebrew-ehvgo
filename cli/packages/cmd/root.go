@@ -7,9 +7,10 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "ehvg",
-	Short: "A simple tool to make the EHVG dev life a bit easier",
-	Long:  "A longer description of the short description to tell you this makes your dev life at EHVG a bit easier",
+	Use:              "ehvg",
+	Short:            "A simple tool to make the EHVG dev life a bit easier",
+	Long:             "A longer description of the short description to tell you this makes your dev life at EHVG a bit easier",
+	TraverseChildren: true,
 }
 
 func Execute() {
@@ -20,5 +21,5 @@ func Execute() {
 }
 
 func init() {
-
+	rootCmd.Flags().BoolP("verbose", "v", false, "Set verbosity options")
 }
