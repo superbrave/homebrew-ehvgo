@@ -5,12 +5,13 @@ import (
 	"context"
 	"ehvg/packages/util"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -33,100 +34,102 @@ func SetContext(cmd *cobra.Command, args []string) {
 			util.PrintError(errors.New("missing context"), true)
 		}
 
+		color.New(color.FgHiYellow).Println("Starting Infisical CLI..")
+
 		ctx := context.Background()
 		projectContext := args[0]
 
 		docker, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-		if err != nil {
-			util.PrintError(err, true)
-		}
+		util.HandleError(err, true)
 
 		defer docker.Close()
 
-		pull := util.PullImage(docker, util.GetInfisicalmage("latest"))
+		pull, err := docker.ImagePull(ctx, util.INFISICAL_CLI_IMAGE, image.PullOptions{
+			RegistryAuth: util.GetDockerAuth("ghcr.io"),
+		})
+		util.HandleError(err, true)
 
-		io.Copy(os.Stdout, pull)
+		defer pull.Close()
+
+		io.Copy(io.Discard, pull)
 
 		infisicalClientAuth, err := util.GetInfisicalClientAuth(projectContext)
-		if err != nil {
-			util.PrintError(err, true)
-		}
+		util.HandleError(err, true)
 
 		containerConfig := &container.Config{
 			Image: util.GetInfisicalmage("latest"),
-			Env: []string{
-				"INFISICAL_UNIVERSAL_AUTH_CLIENT_ID=" + infisicalClientAuth.ClientId,
-				"INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET=" + infisicalClientAuth.ClientSecret,
-				"INFISICAL_PROJECT_ID=" + infisicalClientAuth.ProjectId,
-			},
-			Cmd: []string{
-				"/bin/bash",
-				"-c",
-				"touch /var/www/.env && infisical login",
-			},
-			Shell:        []string{"/bin/bash"},
-			Tty:          true,
-			AttachStdin:  true,
-			AttachStdout: true,
-			AttachStderr: true,
+			Cmd:   []string{"sleep", "20"},
+			Tty:   false,
 		}
 
-		c, err := docker.ContainerCreate(ctx, containerConfig, nil, nil, nil, "")
-		if err != nil {
-			util.PrintError(err, true)
+		hostConfig := &container.HostConfig{
+			NetworkMode: "bridge",
+			AutoRemove:  true,
 		}
+
+		c, err := docker.ContainerCreate(ctx, containerConfig, hostConfig, nil, nil, "")
+		util.HandleError(err, true)
 
 		if err := docker.ContainerStart(ctx, c.ID, container.StartOptions{}); err != nil {
 			util.PrintError(err, true)
 		}
 
-		defer util.StopAndRemoveContainer(docker, ctx, c.ID)
+		cec, err := docker.ContainerExecCreate(ctx, c.ID, container.ExecOptions{
+			Env: []string{
+				"INFISICAL_UNIVERSAL_AUTH_CLIENT_ID=" + infisicalClientAuth.ClientId,
+				"INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET=" + infisicalClientAuth.ClientSecret,
+				"INFISICAL_PROJECT_ID=" + infisicalClientAuth.ProjectId,
+			},
+			Cmd:          []string{"bash", "-c", "infisical export -edev &> /var/www/.env &"},
+			AttachStdin:  true,
+			AttachStdout: true,
+		})
+		util.HandleError(err, true)
 
-		out, err := docker.ContainerLogs(ctx, c.ID, container.LogsOptions{ShowStdout: true, ShowStderr: true})
-		if err != nil {
-			fmt.Printf("Error getting logs: %v\n", err)
-			return
-		}
-		defer out.Close()
-
-		// Print the logs
-		fmt.Println("Container logs:")
-		_, err = io.Copy(os.Stdout, out)
-		if err != nil {
-			fmt.Printf("Error reading logs: %v\n", err)
-		}
-
-		srcFile, _, err := docker.CopyFromContainer(context.Background(), c.ID, "/var/www/.env")
-		if err != nil {
-			util.PrintError(err, true)
+		if err := docker.ContainerExecStart(ctx, cec.ID, container.ExecStartOptions{}); err != nil {
+			util.HandleError(err, true)
 		}
 
-		defer srcFile.Close()
+		cei, err := docker.ContainerExecInspect(ctx, cec.ID)
+		util.HandleError(err, true)
 
-		tr := tar.NewReader(srcFile)
+		if cei.ExitCode == 0 {
+			if _, err := os.Stat(".env"); err == nil {
+				color.New(color.FgHiYellow).Println(".env file already exists, deleting..")
+				os.Remove(".env")
+			}
 
-		for {
-			header, err := tr.Next()
+			color.New(color.FgHiYellow).Println("Creating new .env file..")
 
-			if header != nil {
-				f, err := os.OpenFile(util.GetCwdForFile(".env"), os.O_CREATE|os.O_RDWR, os.FileMode(header.Mode))
+			srcFile, _, err := docker.CopyFromContainer(context.Background(), c.ID, "/var/www/.env")
+			util.HandleError(err, true)
+
+			defer srcFile.Close()
+
+			tr := tar.NewReader(srcFile)
+
+			for {
+				header, err := tr.Next()
+
+				if header != nil {
+					f, err := os.OpenFile(util.GetCwdForFile(".env"), os.O_CREATE|os.O_RDWR, os.FileMode(header.Mode))
+					util.HandleError(err, false)
+
+					if _, err := io.Copy(f, tr); err != nil {
+						util.PrintError(err, false)
+					}
+
+					f.Close()
+				}
+
 				if err != nil {
-					util.PrintError(err, false)
+					break
 				}
-
-				if _, err := io.Copy(f, tr); err != nil {
-					util.PrintError(err, false)
-				}
-
-				f.Close()
-			}
-
-			if err != nil {
-				break
 			}
 		}
-	}
 
+		docker.ContainerStop(ctx, c.ID, container.StopOptions{Signal: "SIGKILL"})
+	}
 }
 
 func init() {
