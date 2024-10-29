@@ -1,4 +1,4 @@
-package cmd
+package infisical
 
 import (
 	"fmt"

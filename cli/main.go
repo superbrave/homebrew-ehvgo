@@ -1,12 +1,12 @@
 package main
 
 import (
-	"ehvg/packages/cmd"
+	"ehvg/packages/infisical"
 	"os"
 )
 
 func main() {
 	defer os.Exit(0)
 
-	cmd.Execute()
+	infisical.Execute()
 }
