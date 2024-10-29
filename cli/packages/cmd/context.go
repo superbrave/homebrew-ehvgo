@@ -17,10 +17,10 @@ var contextCmd = &cobra.Command{
 }
 
 var setContextCmd = &cobra.Command{
-	Use:   "set",
-	Short: "Change the current context of your Docker Compose project",
-  PreRun: PreRunSetContext,
-	Run:   SetContext,
+	Use:    "set",
+	Short:  "Change the current context of your Docker Compose project",
+	PreRun: PreRunSetContext,
+	Run:    SetContext,
 }
 
 func PreRunSetContext(cmd *cobra.Command, args []string) {
@@ -29,10 +29,10 @@ func PreRunSetContext(cmd *cobra.Command, args []string) {
 
 func SetContext(cmd *cobra.Command, args []string) {
 	env, _ := cmd.Flags().GetString("env")
-  application, _ := cmd.Flags().GetString("application")
-  project, _ := cmd.Flags().GetString("project")
+	//application, _ := cmd.Flags().GetString("application")
+	//project, _ := cmd.Flags().GetString("project")
 
-  client := util.
+	//client := util.
 	fmt.Println(env)
 }
 
