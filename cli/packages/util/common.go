@@ -19,3 +19,10 @@ func GetCwdForFile(filename string) string {
 
 	return strings.Join(path, string(os.PathSeparator))
 }
+
+func GetConfigDir() string {
+	h, _ := os.UserHomeDir()
+	dir := strings.Join([]string{h, ".ehvg"}, string(os.PathSeparator))
+
+	return dir
+}
