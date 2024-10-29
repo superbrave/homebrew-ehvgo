@@ -1,21 +1,19 @@
 package util
 
-func GetInfisicalClientAuth(projectContext string) (InfisicalClientAuth, error) {
-	var infisicalClientAuth InfisicalClientAuth
-	var err error
+import (
+	"context"
+	"fmt"
 
-	switch pc := projectContext; pc {
-	case DOKTERONLINE_SLUG:
-		infisicalClientAuth.ClientId = DOK_INFISICAL_CLIENT_ID
-		infisicalClientAuth.ClientSecret = DOK_INFISICAL_CLIENT_SECRET
-		infisicalClientAuth.ProjectId = DOK_INFISICAL_PROJECT_ID
+	infisical "github.com/infisical/go-sdk"
+)
 
-		err = nil
-	}
+func NewInfisicalClient() {
+	client := infisical.NewInfisicalClient(context.Background(), infisical.Config{
+		SiteUrl: INFISICAL_SITE_URL,
+	})
+	fmt.Println(client)
 
-	return infisicalClientAuth, err
-}
+	//_, err := client.Auth().UniversalAuthLogin()
 
-func GetInfisicalmage(version string) string {
-	return INFISICAL_CLI_IMAGE + ":" + version
+	//HandleError(err, true)
 }
