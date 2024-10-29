@@ -36,7 +36,7 @@ func SetContext(cmd *cobra.Command, args []string) {
 	fmt.Println(env)
 }
 
-func init() {
+func Execute(rootCmd *cobra.Command) {
 	setContextCmd.Flags().StringVarP(&env, "env", "e", "dev", "The environment to retrieve the variables for")
 	setContextCmd.Flags().StringVarP(&service, "service", "", "", "The service to retrieve the variables for")
 	setContextCmd.Flags().StringVarP(&application, "application", "", "", "The application to retrieve the variables for")

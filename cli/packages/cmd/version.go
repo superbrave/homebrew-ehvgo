@@ -1,4 +1,4 @@
-package infisical
+package cmd
 
 import (
 	"ehvg/packages/util"
@@ -15,6 +15,6 @@ var versionCmd = &cobra.Command{
 	},
 }
 
-func init() {
+func Execute(rootCmd *cobra.Command) {
 	rootCmd.AddCommand(versionCmd)
 }
