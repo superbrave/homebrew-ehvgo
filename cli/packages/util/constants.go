@@ -11,4 +11,8 @@ const (
 	SEEMENOPAUSE_SLUG = "smnp"
 
 	EHVGO_VERSION = "0.0.1"
+
+	AZURE_APPLICATION_ID = "be6052d1-c352-4d66-a9c7-8a0feccb95aa"
+	AZURE_TENANT_ID      = "038f6cb0-a812-40f0-a874-1fde22cabecb"
+	AZURE_REDIRECT_URL   = "http://localhost:8000"
 )

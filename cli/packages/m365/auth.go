@@ -14,6 +14,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var credentials *azidentity.InteractiveBrowserCredential
+
 var loginCommand = &cobra.Command{
 	Use:   "login",
 	Short: "Authenticate with Microsoft 365",
@@ -33,7 +35,7 @@ var whoamiCommand = &cobra.Command{
 }
 
 func Whoami(cmd *cobra.Command, args []string) {
-	record, err := RetrieveRecord()
+	record, err := RetrieveAuthenticationRecord()
 	if err == nil {
 		fmt.Printf("You are currently logged in as: %v, on tenant %v", record.Username, record.TenantID)
 	}
@@ -41,7 +43,7 @@ func Whoami(cmd *cobra.Command, args []string) {
 
 func DestroySession(cmd *cobra.Command, args []string) {
 	if _, err := os.Stat(GetAuthFile()); os.IsNotExist(err) {
-		color.New(color.FgYellow).Println("No Microsoft 356 session found.")
+		color.New(color.FgHiYellow).Println("No Microsoft 356 session found.")
 
 		return
 	} else {
@@ -50,28 +52,45 @@ func DestroySession(cmd *cobra.Command, args []string) {
 		}
 	}
 
-	color.New(color.FgGreen).Println("Successfully logged out from Microsoft 365")
+	color.New(color.FgHiGreen).Println("Successfully logged out from Microsoft 365")
 }
 
 func Authenticate(cmd *cobra.Command, args []string) {
-	record, err := RetrieveRecord()
-	util.HandleError(err, true)
+	r, err := RetrieveAuthenticationRecord()
+	if err != nil {
+		color.New(color.FgHiRed).Printf("Unable to retrieve authentication record: %v", err)
+		return
+	}
 
 	cache, err := cache.New(nil)
-	util.HandleError(err, false)
+	if err != nil {
+		color.New(color.FgHiRed).Printf("Unable instantiate persistent cache: %v", err)
+	}
 
-	creds, err := azidentity.NewInteractiveBrowserCredential(&azidentity.InteractiveBrowserCredentialOptions{
-		AuthenticationRecord: record,
+	credentials, err = azidentity.NewInteractiveBrowserCredential(&azidentity.InteractiveBrowserCredentialOptions{
 		Cache:                cache,
+		TenantID:             util.AZURE_TENANT_ID,
+		ClientID:             util.AZURE_APPLICATION_ID,
+		RedirectURL:          util.AZURE_REDIRECT_URL,
+		AuthenticationRecord: r,
 	})
-	util.HandleError(err, true)
+	if err != nil {
+		color.New(color.FgHiRed).Printf("Unable to start authorization: %v", err)
+		return
+	}
 
-	if (record == azidentity.AuthenticationRecord{}) {
-		record, err = creds.Authenticate(context.Background(), nil)
-		util.HandleError(err, true)
+	if r == (azidentity.AuthenticationRecord{}) {
+		color.New(color.FgHiWhite).Println("Starting authentication")
+		r, err = credentials.Authenticate(context.TODO(), nil)
+		if err != nil {
+			color.New(color.FgHiRed).Printf("Unable to authenticate: %v", err)
+			return
+		}
 
-		if err := StoreRecord(record); err != nil {
-			util.HandleError(err, true)
+		err = StoreAuthenticationRecord(r)
+		if err != nil {
+			color.New(color.FgHiRed).Printf("Unable store authentication: %v", err)
+			return
 		}
 	}
 }
@@ -97,26 +116,45 @@ func GetAndCreateAuthFile() string {
 	return GetAuthFile()
 }
 
-func RetrieveRecord() (azidentity.AuthenticationRecord, error) {
+func RetrieveAuthenticationRecord() (azidentity.AuthenticationRecord, error) {
 	record := azidentity.AuthenticationRecord{}
 
 	b, err := os.ReadFile(GetAndCreateAuthFile())
+	util.HandleError(err, false)
 
-	if err == nil && json.Valid(b) {
-		err = json.Unmarshal(b, &record)
+	if len(b) > 0 {
+		dc, err := util.Decrypt(b)
+
+		if err == nil && json.Valid(dc) {
+			_ = json.Unmarshal(dc, &record)
+		}
 	}
 
 	return record, err
 }
 
-func StoreRecord(record azidentity.AuthenticationRecord) error {
+func StoreAuthenticationRecord(record azidentity.AuthenticationRecord) error {
 	b, err := json.Marshal(record)
 	util.HandleError(err, true)
 
-	err = os.WriteFile(GetAndCreateAuthFile(), b, 0700)
+	e, err := util.Encrypt(b)
+	util.HandleError(err, true)
+
+	err = os.WriteFile(GetAndCreateAuthFile(), e, 0700)
 
 	return err
 }
+
+// func NewGraphClient(scopes []string) (*msgraphsdk.GraphServiceClient, error) {
+// 	creds, err := RetrieveRecord()
+// 	if err != nil {
+// 		color.New(color.FgHiRed).Println("Invalid credentials provided")
+// 	}
+
+// 	creds.GetToken()
+
+// 	authProvider, err := azure.NewAzureIdentityAuthenticationProviderWithScopes(creds, scopes)
+// }
 
 func init() {
 	m365Command.AddCommand(loginCommand)
