@@ -14,7 +14,7 @@ func NewPurgeCommand(cfg *action.Configuration) *cobra.Command {
     Use:   "purge",
     Short: "Purge stale deployments",
     Run:   func(cmd *cobra.Command, args []string) {
-        debug, _ := cmd.Flags().GetBool("debug")
+        debugFlag, _ := cmd.Flags().GetBool("debug")
         ns, _ := cmd.Flags().GetString("namespace")
         if err := cfg.Init(settings.RESTClientGetter(), ns, os.Getenv("HELM_DRIVER"), debug); err != nil {
           util.Red.Printf("error initializing config: %v", err)
@@ -38,7 +38,7 @@ func NewPurgeCommand(cfg *action.Configuration) *cobra.Command {
         for _, r := range releases {
           if r.isStale(maxAge) {
             numDeleted++
-            if err := r.purgeDeployment(cfg, debug); err != nil {
+            if err := r.purgeDeployment(cfg, debugFlag); err != nil {
               util.Red.Printf("error deleting release: %v", err)
               return
             }
