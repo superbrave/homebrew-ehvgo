@@ -3,117 +3,75 @@ package helm
 import (
 	"ehvg/packages/util"
 	"fmt"
-	"log"
-	"math"
 	"os"
-	"time"
 
-	hAction "helm.sh/helm/v3/pkg/action"
-	hCli "helm.sh/helm/v3/pkg/cli"
-	hTime "helm.sh/helm/v3/pkg/time"
-
-	"github.com/fatih/color"
-	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
+	"helm.sh/helm/v3/pkg/action"
 )
 
-var actionConfig = &hAction.Configuration{}
+func NewPurgeCommand(cfg *action.Configuration) *cobra.Command {
+  cmd := &cobra.Command{
+    Use:   "purge",
+    Short: "Purge stale deployments",
+    Run:   func(cmd *cobra.Command, args []string) {
+        debug, _ := cmd.Flags().GetBool("debug")
+        ns, _ := cmd.Flags().GetString("namespace")
+        if err := cfg.Init(settings.RESTClientGetter(), ns, os.Getenv("HELM_DRIVER"), debug); err != nil {
+          util.Red.Printf("error initializing config: %v", err)
+          return
+        }
 
-var purgeCommand = &cobra.Command{
-	Use:   "purge",
-	Short: "Purge stale deployments",
-	Run:   purgeDeployments,
+        releases, err := filterReleases(cfg, cmd, args)
+        if err != nil {
+          util.Red.Printf("error while fetching releases: %v", err)
+          return
+        }
+
+        if len(releases) < 1 {
+          util.White.Printf("No releases found with current filters")
+          return
+        }
+
+        maxAge, _ := cmd.Flags().GetInt("max-age")
+        numDeleted := 0
+
+        for _, r := range releases {
+          if r.isStale(maxAge) {
+            numDeleted++
+            if err := r.purgeDeployment(cfg, debug); err != nil {
+              util.Red.Printf("error deleting release: %v", err)
+              return
+            }
+          }
+        }
+
+        util.White.Printf("Deleted %v stale deployements\n", numDeleted)
+    },
+  }
+
+  cmd.Flags().StringP("filter", "f", ".*", "Filter your releases by name")
+  cmd.Flags().IntP("max-age", "", 14, "Maximum age of a release in days")
+
+  return cmd
 }
 
-func purgeDeployments(cmd *cobra.Command, args []string) {
-	namespace, _ := cmd.Flags().GetString("namespace")
-	maxAge, _ := cmd.Flags().GetInt("max-age")
-	filter, _ := cmd.Flags().GetString("filter")
-	showList, _ := cmd.Flags().GetBool("list")
-	ack, _ := cmd.Flags().GetBool("yes")
+func (r EHVGRelease) purgeDeployment(cfg *action.Configuration, debug bool) error {
+  util.White.Printf("Deleting %v..\n", r.Name)
 
-	settings := hCli.New()
+  rem := action.NewUninstall(cfg)
+  if debug {
+    util.White.Println(rem)
+  }
+  rem.DeletionPropagation = "foreground"
+  rem.Wait = true
+  
+  resp, err := rem.Run(r.Name)
+  if err != nil {
+    return err
+  }
 
-	if err := actionConfig.Init(settings.RESTClientGetter(), namespace, os.Getenv("HELM_DRIVER"), log.Printf); err != nil {
-		fmt.Println(err)
-	}
+  fmt.Println(resp.Info)
+ 
+  return nil
 
-	deployments := hAction.NewList(actionConfig)
-	deployments.All = true
-	deployments.Filter = filter
-	deployments.Short = true
-
-	list, err := deployments.Run()
-	if err != nil {
-		color.New(color.FgHiRed).Printf("Cannot list deployments: %v", err)
-
-		return
-	}
-
-	cutoff := time.Now().AddDate(0, 0, -(maxAge))
-	hCutoff := hTime.Time{
-		Time: time.Now().AddDate(0, 0, -(maxAge)),
-	}
-
-	t := table.NewWriter()
-	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"Revision", "Name", "Installed at", "Updated at", "# Days left"})
-
-	rows := []table.Row{}
-
-	if len(list) <= 0 {
-		util.White.Printf("No releases found with the current filter: %v", filter)
-
-		return
-	}
-
-	for _, release := range list {
-		isStale := release.Info.LastDeployed.Before(hCutoff)
-		daysLeft := math.Round(release.Info.LastDeployed.Time.Sub(cutoff).Hours() / 24)
-		daysLeftStr := fmt.Sprintf("%.0f", daysLeft)
-
-		c := util.Green.Sprint(daysLeftStr)
-
-		if daysLeft < 1 {
-			c = util.Red.Sprint(daysLeftStr)
-		}
-
-		if showList {
-			rows = append(rows, table.Row{release.Version, release.Name, release.Info.FirstDeployed.Format(time.DateTime), release.Info.LastDeployed.Format(time.DateTime), c})
-		}
-
-		if isStale {
-			uninstall := hAction.NewUninstall(actionConfig)
-			uninstall.DryRun = !ack
-			uninstall.KeepHistory = false
-			uninstall.DeletionPropagation = "Foreground"
-			uninstall.Wait = true
-			uninstall.IgnoreNotFound = false
-
-			uninstallRun, err := uninstall.Run(release.Name)
-			if err != nil {
-				util.Red.Printf("Unable to uninstall release %v: %v", release.Name, err)
-				return
-			}
-
-			util.White.Printf(uninstallRun.Info)
-		}
-	}
-
-	t.AppendRows(rows)
-
-	if showList {
-		t.Render()
-	}
-
-}
-
-func init() {
-	purgeCommand.Flags().StringP("namespace", "n", "", "Namespace to look for deployments")
-	purgeCommand.Flags().IntP("max-age", "", 14, "Maximum lifetime of a release, before it gets purged")
-	purgeCommand.Flags().StringP("filter", "", "", "Filter for deployment names")
-	purgeCommand.Flags().BoolP("list", "l", false, "List all the releases")
-	purgeCommand.Flags().BoolP("yes", "y", false, "Explicitly set flag to acknowledge that you want to remove releases")
-	purgeCommand.MarkFlagsRequiredTogether("namespace", "max-age", "filter")
-	helmCommand.AddCommand(purgeCommand)
 }
