@@ -3,7 +3,14 @@ package util
 import (
 	"os"
 	"strings"
+
+	"github.com/fatih/color"
 )
+
+var Red = color.New(color.FgHiRed)
+var Yellow = color.New(color.FgHiYellow)
+var Green = color.New(color.FgHiGreen)
+var White = color.New(color.FgHiWhite)
 
 func HandleError(err error, throwPanic bool) {
 	if err != nil {

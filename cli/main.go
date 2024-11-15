@@ -2,6 +2,7 @@ package main
 
 import (
 	"ehvg/packages/cmd"
+	"ehvg/packages/helm"
 	"ehvg/packages/infisical"
 	"ehvg/packages/m365"
 	"ehvg/packages/util"
@@ -20,10 +21,10 @@ var rootCmd = &cobra.Command{
 func main() {
 	defer os.Exit(0)
 
-  
 	cmd.Execute(rootCmd)
 	infisical.Execute(rootCmd)
 	m365.Execute(rootCmd)
+	helm.Execute(rootCmd)
 	err := rootCmd.Execute()
 	util.HandleError(err, true)
 }
