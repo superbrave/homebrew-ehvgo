@@ -24,6 +24,7 @@ jobs:
         env:
           GOOS: ${{ matrix.os }}
           GOARCH: ${{ matrix.arch }}
+          VERSION: ${GITHUB_REF#refs/tags/}
         run: make -s build-cli
       - name: Upload binaries
         uses: actions/upload-release-asset@v1
