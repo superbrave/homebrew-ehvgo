@@ -6,9 +6,24 @@ on:
       - '[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
+  set-version-tags:
+    name: Set version tags
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.prepare-version-tags.outputs.version }}
+    steps:
+      - name: Prepare image version and tags
+        id: prepare-version-tags
+        run: |
+            VERSION=${GITHUB_REF#refs/tags/}
+            VERSION=${VERSION//\//-}
+            echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
   build-application:
     name: Build EHVGo
     runs-on: ubuntu-latest
+    needs:
+      - set-version-tags
     strategy:
       fail-fast: true
       matrix:
@@ -20,12 +35,30 @@ jobs:
         uses: actions/setup-go@v5
         with: 
           go-version: 1.22
+      - name: Cache Executables
+        id: cache-execs
+        uses: actions/cache@v4
+        with:
+            key: dist-${{ github.run_id }}
+            path: dist/
       - name: Build
         env:
           GOOS: ${{ matrix.os }}
           GOARCH: ${{ matrix.arch }}
-          VERSION: ${{ github.ref }}
+          VERSION: ${{ github.needs.set-version-tags-outputs.version }}
         run: make -s build-cli
+
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: 
+      - build-application
+    steps:
+      - name: Load Executables
+        uses: actions/cache@v4
+        with:
+            key: dist-${{ github.run_id }}
+            path: dist/
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
@@ -34,3 +67,4 @@ jobs:
           make_latest: true
           files: |
             dist/ehvgo-*
+
