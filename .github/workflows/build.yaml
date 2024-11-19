@@ -40,12 +40,12 @@ jobs:
         uses: actions/cache@v4
         with:
             key: dist-${{ github.run_id }}-${{ matrix.os }}-${{ matrix.arch }}
-            path: dist/ehvgo-${{ needs.set-version-tags-outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}
+            path: dist/ehvgo-${{ needs.set-version-tags.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}
       - name: Build
         env:
           GOOS: ${{ matrix.os }}
           GOARCH: ${{ matrix.arch }}
-          VERSION: ${{ needs.set-version-tags-outputs.version }}
+          VERSION: ${{ needs.set-version-tags.outputs.version }}
         run: make -s build-cli
 
   create-release:
@@ -63,7 +63,7 @@ jobs:
         uses: actions/cache@v4
         with:
             key: dist-${{ github.run_id }}-${{ matrix.os }}-${{ matrix.arch }}
-            path: dist/ehvgo-${{ needs.set-version-tags-outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}
+            path: dist/ehvgo-${{ needs.set-version-tags.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
