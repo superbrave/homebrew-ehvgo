@@ -52,6 +52,7 @@ jobs:
     name: Create Release
     runs-on: ubuntu-latest
     needs: 
+      - set-version-tags
       - build-application
     strategy:
       fail-fast: true
