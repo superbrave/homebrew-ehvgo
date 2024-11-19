@@ -7,10 +7,14 @@ import (
 	"github.com/fatih/color"
 )
 
-var Red = color.New(color.FgHiRed)
-var Yellow = color.New(color.FgHiYellow)
-var Green = color.New(color.FgHiGreen)
-var White = color.New(color.FgHiWhite)
+var  (
+  EhvgoVersion string
+
+  Red = color.New(color.FgHiRed)
+  Yellow = color.New(color.FgHiYellow)
+  Green = color.New(color.FgHiGreen)
+  White = color.New(color.FgHiWhite)
+)
 
 func HandleError(err error, throwPanic bool) {
 	if err != nil {

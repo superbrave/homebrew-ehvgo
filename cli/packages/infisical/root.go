@@ -1,9 +1,6 @@
 package infisical
 
 import (
-	"context"
-
-	ifc "github.com/infisical/go-sdk"
 	"github.com/spf13/cobra"
 )
 
@@ -20,21 +17,4 @@ func Execute(rootCmd *cobra.Command) {
   rootCmd.AddCommand(
     infisicalCommand,
   )
-}
-
-func GetClient() (ifc.InfisicalClientInterface, error) {
-  client := ifc.NewInfisicalClient(context.Background(), ifc.Config{
-    SiteUrl: INFISICAL_SITE_URL,
-  })
-
-  _, err := client.Auth().UniversalAuthLogin(DOK_INFISICAL_CLIENT_ID, DOK_INFISICAL_CLIENT_SECRET)
-  if err != nil {
-    return nil, err
-  }
-
-  return client, nil
-}
-
-func CompletionListSites() []string {
-  return []string{"dokteronline", "dok", "seemenopause", "smnp"}
 }
