@@ -74,7 +74,6 @@ jobs:
           fail_on_unmatched_files: true
           generate_release_notes: true
           make_latest: true
-          token: 
           files: |
             dist/ehvgo-*
 
@@ -94,6 +93,11 @@ jobs:
         os: [linux, darwin]
         arch: [amd64, arm64]
     steps:
+      - name: Load Executables
+        uses: actions/cache@v4
+        with:
+            key: dist-${{ github.run_id }}-${{ matrix.os }}-${{ matrix.arch }}
+            path: dist/ehvgo-${{ needs.set-version-tags.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}.gz
       - name: install-aws-cli-action
         uses: unfor19/install-aws-cli-action@v1
       - name: Configure AWS Credentials
