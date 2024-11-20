@@ -75,4 +75,15 @@ jobs:
           make_latest: true
           files: |
             dist/ehvgo-*
+      - name: install-aws-cli-action
+        uses: unfor19/install-aws-cli-action@v1
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+            role-to-assume: arn:aws:iam::051772299350:role/S3GithubAccess
+            role-session-name: DistUploadViaFederatedOIDC
+            aws-region: eu-central-1
+      - name: Upload to S3
+        run: aws s3 cp dist/* s3://dist.ehealthsystems.nl/ehvgo/
+        
 
