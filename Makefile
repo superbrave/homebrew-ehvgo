@@ -6,5 +6,5 @@ build-cli:
 		-X ehvg/packages/infisical.SmnpClientSecret=${SMNP_INFISICAL_CLIENT_SECRET} \
 		-X ehvg/packages/infisical.EhvgClientID=${EHVG_INFISICAL_CLIENT_ID} \
 		-X ehvg/packages/infisical.EhvgClientSecret=${EHVG_INFISICAL_CLIENT_SECRET} \
-		-X ehvg/packages/util.EhvgoVersion=${VERSION}' \
+		-X ehvg/packages/util.EhvgoVersion=${VERSION} \
 	"
