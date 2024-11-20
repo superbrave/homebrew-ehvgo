@@ -58,6 +58,7 @@ jobs:
       - build-application
     strategy:
       fail-fast: true
+      max-parallel: 1
       matrix:
         os: [linux, darwin]
         arch: [amd64, arm64]
