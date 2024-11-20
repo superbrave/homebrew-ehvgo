@@ -45,7 +45,7 @@ jobs:
         env:
           GOOS: ${{ matrix.os }}
           GOARCH: ${{ matrix.arch }}
-          VERSION: ${{ needs.set-version-tags.outputs.version }}-${{ needs.set-version-tags.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}
+          VERSION: ${{ needs.set-version-tags.outputs.version }}
         run: | 
           make -s build-cli && \
           gzip dist/ehvgo-${{ needs.set-version-tags.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}
