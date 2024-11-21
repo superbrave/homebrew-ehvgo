@@ -46,9 +46,16 @@ jobs:
           GOOS: ${{ matrix.os }}
           GOARCH: ${{ matrix.arch }}
           VERSION: ${{ needs.set-version-tags.outputs.version }}
+          DOK_INFISICAL_CLIENT_ID: ${{ secrets.DOK_INFISICAL_CLIENT_ID }}
+          DOK_INFISICAL_CLIENT_SECRET: ${{ secrets.DOK_INFISICAL_CLIENT_SECRET }}
+          SMNP_INFISICAL_CLIENT_ID: ${{ secrets.SMNP_INFISICAL_CLIENT_ID }}
+          SMNP_INFISICAL_CLIENT_SECRET: ${{ secrets.SMNP_INFISICAL_CLIENT_SECRET }}
+          EHVG_INFISICAL_CLIENT_ID: ${{ secrets.EHVG_INFISICAL_CLIENT_ID }}
+          AHVG_INFISICAL_CLIENT_SECRET: ${{ secrets.EHVG_INFISICAL_CLIENT_SECRET }}
         run: | 
           make -s build-cli && \
-          gzip dist/ehvgo-${{ needs.set-version-tags.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}
+          gzip dist/ehvgo-${{ needs.set-version-tags.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }} && \
+          sha256sum dist/ehvgo-${{ needs.set-version-tags.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}.gz
 
   create-release:
     name: Create Release

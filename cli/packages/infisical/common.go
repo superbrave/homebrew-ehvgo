@@ -8,7 +8,7 @@ func getFullApplicationName(n string) string {
   switch strings.ToLower(n) {
   case "dok", "dokteronline": 
     return "Dokteronline"
-  case "smnp", "seemenopause":
+  case "smnp", "seemenopause", "seeme":
     return "SeeMeNoPause"
   case "ehvg", "ehealthventuresgroup":
     return "eHealth Ventures Group"
@@ -18,5 +18,5 @@ func getFullApplicationName(n string) string {
 }
 
 func CompletionListSites() []string {
-  return []string{"dokteronline", "dok", "seemenopause", "smnp", "ehvg", "ehealthventuresgroup"}
+  return []string{"dokteronline", "dok", "seemenopause", "smnp", "seeme", "ehvg", "ehealthventuresgroup"}
 }
