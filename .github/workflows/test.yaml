@@ -19,6 +19,7 @@ jobs:
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
           echo "/home/linuxbrew/.linuxbrew/bin">> $GITHUB_PATH
       - run: brew install Formula/ehvgo.rb
+      - run: ehvgo version
   test-darwin-arm64:
     name: Test binary on Apple Silicon arch
     runs-on: macos-latest
