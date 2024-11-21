@@ -1,0 +1,23 @@
+on:
+  push:
+    paths:
+      - Formula/ehvgo.rb
+  workflow_dispatch: {}
+
+name: Test the package binaries
+
+jobs:
+  test-linux-amd64:
+    name: Test binary on AMD54 arch
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      - run: brew install Formula/ehvgo.db
+  test-darwin-amd64:
+    name: Test binary on AMD54 arch
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      - run: brew install Formula/ehvgo.db
