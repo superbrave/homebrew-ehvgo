@@ -1,32 +1,32 @@
 class Ehvgo < Formula
   desc "EHVG toolbelt"
-  version "1.0.1"
+  version "1.0.5"
   homepage "https://github.com/superbrave/ehvgo"
   license ""
 
   on_linux do
     on_intel do
-      url "https://dist.ehealthsystems.nl/ehvgo/ehvgo-1.0.1-linux-amd64.gz"
-      sha256 "673d577e6839a5fc1bbd2fdfb5719c8b05f63216362d73bde0019caeb3dcd5b2"
+      url "https://dist.ehealthsystems.nl/ehvgo/ehvgo-1.0.5-linux-amd64.gz"
+      sha256 "dfedd03d2e48861bbfaeef6fc2d7295481c516fb1c3bbca050f1db4d13a5a4e7"
       def install
-        bin.install "ehvgo-1.0.1-linux-amd64" => "ehvgo"
+        bin.install "ehvgo-1.0.5-linux-amd64" => "ehvgo"
       end
     end
 
     on_arm do
-      url "https://dist.ehealthsystems.nl/ehvgo/ehvgo-1.0.1-linux-arm64.gz"
-      sha256 "b19bfaab117e6707d568fa706e6e98e5d16fcd39a984dcf59750019a5f74846e"
+      url "https://dist.ehealthsystems.nl/ehvgo/ehvgo-1.0.5-linux-arm64.gz"
+      sha256 "64e86fab0c6c9aab50b6a635fafb2fdb9605712a618eb5e79cb5798e54043952"
       def install
-        bin.install "ehvgo-1.0.1-linux-arm64" => "ehvgo"
+        bin.install "ehvgo-1.0.5-linux-arm64" => "ehvgo"
       end
     end
   end
 
   on_macos do
-    url "https://dist.ehealthsystems.nl/ehvgo/ehvgo-1.0.1-darwin-arm64.gz"
-    sha256 "673d577e6839a5fc1bbd2fdfb5719c8b05f63216362d73bde0019caeb3dcd5b2"
+    url "https://dist.ehealthsystems.nl/ehvgo/ehvgo-1.0.5-darwin-arm64.gz"
+    sha256 "1d96a35e1eab3f0d8879297c7502429fdef8d569dfcbf95aa991ff1bac1e2839"
     def install
-      bin.install "ehvgo-1.0.1-darwin-arm64" => "ehvgo"
+      bin.install "ehvgo-1.0.5-darwin-arm64" => "ehvgo"
     end    
   end 
   test do
