@@ -19,7 +19,7 @@ jobs:
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
       - run: brew install Formula/ehvgo.rb
         env:
-          PATH: "$PATH:/home/linuxbrew/.linuxbrew/bin"
+          PATH: "$HOME/.linuxbrew/bin:$PATH"
   test-darwin-arm64:
     name: Test binary on Apple Silicon arch
     runs-on: macos-latest
@@ -31,3 +31,4 @@ jobs:
           echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/runner/.bash_profile && \
           eval "$(/opt/homebrew/bin/brew shellenv)"
       - run: brew install Formula/ehvgo.rb
+      - run: ehvgo version
