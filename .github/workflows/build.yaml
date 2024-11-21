@@ -57,7 +57,7 @@ jobs:
         run: | 
           make -s build-cli && \
           gzip dist/ehvgo-${{ needs.set-version-tags.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }} && \
-          echo `sha256sum dist/ehvgo-${{ needs.set-version-tags.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}.gz` >> ${{ github.workspace }}/output-${{ matrix.os }}-${{ matrix.arch }}.md
+          echo `sha256sum dist/ehvgo-${{ needs.set-version-tags.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}.gz`
 
   create-release:
     name: Create Release
@@ -117,13 +117,3 @@ jobs:
             aws-region: eu-central-1
       - name: Upload to S3
         run: aws s3 cp dist/* s3://dist.ehealthsystems.nl/ehvgo/
-
-  create-summary:
-    name: Create build summary
-    runs-on: ubuntu-latest
-    needs:
-      - set-version-tags
-      - build-application
-    steps:
-      - name: Create Summary Table
-        run: cat ${{ github.workspace }}/output*.md
