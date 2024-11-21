@@ -26,7 +26,7 @@ class Ehvgo < Formula
     url "https://dist.ehealthsystems.nl/ehvgo/ehvgo-1.0.0-darwin-arm64.gz"
     sha256 "970d0578cd1a392a8ed5b9db2456b6a0fc899134ac69855a6cebe85050b2406a"
     def install
-      bin.install "ehvgo-1.0.0-linux-arm64" => "ehvgo"
+      bin.install "ehvgo-1.0.0-darwin-arm64" => "ehvgo"
     end    
   end 
   test do
