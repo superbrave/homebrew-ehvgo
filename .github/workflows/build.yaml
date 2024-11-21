@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'
+  workflow_dispatch:
+    
 
 jobs:
   set-version-tags:
@@ -30,6 +32,11 @@ jobs:
         os: [linux, darwin]
         arch: [amd64, arm64]
     steps:
+      - name: Adding markdown
+        run: |
+          echo '### Binaries ' >> $GITHUB_STEP_SUMMARY && \
+          echo '| OS | Arch | URL | SHA256SUM' >> $GITHUB_STEP_SUMMARY && \
+          echo '| --- | --- | --- | --- |' >> $GITHUB_STEP_SUMMARY
       - uses: actions/checkout@v4
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -55,7 +62,7 @@ jobs:
         run: | 
           make -s build-cli && \
           gzip dist/ehvgo-${{ needs.set-version-tags.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }} && \
-          sha256sum dist/ehvgo-${{ needs.set-version-tags.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}.gz
+          echo "|${{ matrix.os}}|${{ matrix.arch }}| https://dist.ehealthsystems.nl/ehvgo/ehvgo-${{ needs.set-version-tags.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}.gz|`sha256sum dist/ehvgo-${{ needs.set-version-tags.outputs.version }}-${{ matrix.os }}-${{ matrix.arch }}.gz`|" >> $GITHUB_STEP_SUMMARY
 
   create-release:
     name: Create Release
