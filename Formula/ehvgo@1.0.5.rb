@@ -1,4 +1,4 @@
-class Ehvgo < Formula
+class Ehvgo105 < Formula
   desc "EHVG toolbelt"
   version "1.0.5"
   homepage "https://github.com/superbrave/ehvgo"
