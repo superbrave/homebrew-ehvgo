@@ -9,6 +9,8 @@ import (
     "sort"
     "strings"
 
+    "ehvgo/src/ui"
+
     "github.com/manifoldco/promptui"
     "github.com/spf13/cobra"
 )
@@ -73,7 +75,8 @@ func newLoginCommand() *cobra.Command {
             execCmd.Stdout = cmd.OutOrStdout()
             execCmd.Stderr = cmd.ErrOrStderr()
 
-            if err := execCmd.Run(); err != nil {
+            err = ui.RunWithSpinner(os.Stderr, "Running aws sso login", execCmd.Run)
+            if err != nil {
                 if errors.Is(err, exec.ErrNotFound) {
                     return errors.New("aws CLI not found in PATH")
                 }
@@ -86,6 +89,7 @@ func newLoginCommand() *cobra.Command {
 
     cmd.Flags().StringVar(&loginProfile, "profile", "", "AWS profile name")
 
+    ui.AddHelpCommand(cmd)
     return cmd
 }
 

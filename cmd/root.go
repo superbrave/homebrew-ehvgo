@@ -4,7 +4,9 @@ import (
     "fmt"
     "os"
 
-    "ehvgo/cmd/aws"
+    "ehvgo/src/aws"
+    "ehvgo/src/kubernetes"
+    "ehvgo/src/ui"
 
     "github.com/spf13/cobra"
 )
@@ -19,7 +21,9 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
+    ui.AddHelpCommand(rootCmd)
     rootCmd.AddCommand(aws.NewCommand())
+    rootCmd.AddCommand(kubernetes.NewCommand())
 }
 
 // Execute runs the root command.
