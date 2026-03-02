@@ -72,10 +72,13 @@ func newLoginCommand() *cobra.Command {
 
             execCmd := exec.Command("aws", argsList...)
             execCmd.Stdin = cmd.InOrStdin()
-            execCmd.Stdout = cmd.OutOrStdout()
-            execCmd.Stderr = cmd.ErrOrStderr()
 
-            err = ui.RunWithSpinner(os.Stderr, "Running aws sso login", execCmd.Run)
+            stopSpinner := ui.StartSpinner(os.Stderr, "Running aws sso login")
+            execCmd.Stdout = ui.WrapWriterOnFirstWrite(cmd.OutOrStdout(), stopSpinner)
+            execCmd.Stderr = ui.WrapWriterOnFirstWrite(cmd.ErrOrStderr(), stopSpinner)
+
+            err = execCmd.Run()
+            stopSpinner()
             if err != nil {
                 if errors.Is(err, exec.ErrNotFound) {
                     return errors.New("aws CLI not found in PATH")

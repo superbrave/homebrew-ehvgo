@@ -28,6 +28,7 @@ SYNOPSIS
     ehvg k8s show-context
     ehvg k8s set-namespace [--namespace <name>]
     ehvg k8s show-namespace
+    ehvg k8s get <resource> [name] [-n <namespace> | --all]
 
 DESCRIPTION
     ehvg prints a short message by default.
@@ -60,7 +61,18 @@ COMMANDS
     k8s show-namespace
         Show the currently selected Kubernetes namespace.
 
+    k8s get
+        Get Kubernetes resources using the selected context and namespace.
+        Use -n to override the selected namespace.
+        Use --all to query all namespaces.
+
 FLAGS
     aws login --profile <name>
         Override the profile to use for login.
+
+    k8s get -n <name>
+        Override the namespace to use for this command.
+
+    k8s get --all
+        Use all namespaces for this command.
 ```

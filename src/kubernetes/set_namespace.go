@@ -34,7 +34,7 @@ func newSetNamespaceCommand() *cobra.Command {
                 }
 
                 var namespaces []string
-                err := ui.RunWithSpinner(os.Stderr, "Fetching namespaces", func() error {
+                err = ui.RunWithSpinner(os.Stderr, "Fetching namespaces", func() error {
                     var listErr error
                     namespaces, listErr = listNamespaces()
                     return listErr
