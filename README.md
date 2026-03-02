@@ -11,11 +11,6 @@ Command-line application built with Cobra.
 
 Install from the custom tap (this repo contains the formula under `Formula/ehvg.rb`):
 
-1. `brew tap superbrave/ehvgo https://github.com/superbrave/ehvgo`
-2. `brew install ehvg`
-
-If you have a dedicated tap repo named `homebrew-ehvgo`, use:
-
 1. `brew tap superbrave/ehvgo`
 2. `brew install ehvg`
 

@@ -1,6 +1,6 @@
 class Ehvg < Formula
-  desc "Command-line application built with Cobra"
-  homepage "https://github.com/superbrave/ehvgo"
+  desc "Command-line application for managing EHVG resources"
+  homepage "https://github.com/superbrave/homebrew-ehvgo"
   version "2.0.0"
 
   on_macos do
