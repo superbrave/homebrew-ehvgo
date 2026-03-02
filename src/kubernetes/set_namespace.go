@@ -121,7 +121,7 @@ func listNamespaces() ([]string, error) {
         return nil, err
     }
 
-    clientset, err := kubernetes.NewForConfig(restConfig)
+    clientSet, err := kubernetes.NewForConfig(restConfig)
     if err != nil {
         return nil, err
     }
@@ -129,7 +129,7 @@ func listNamespaces() ([]string, error) {
     ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
     defer cancel()
 
-    list, err := clientset.CoreV1().Namespaces().List(ctx, metav1.ListOptions{})
+    list, err := clientSet.CoreV1().Namespaces().List(ctx, metav1.ListOptions{})
     if err != nil {
         return nil, err
     }

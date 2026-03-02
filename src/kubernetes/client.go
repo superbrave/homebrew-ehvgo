@@ -26,7 +26,7 @@ func loadKubeSelectionRequired() (string, string, error) {
     return contextName, namespace, nil
 }
 
-func newClientset(contextName string) (*kubeclient.Clientset, error) {
+func newClientSet(contextName string) (*kubeclient.Clientset, error) {
     restConfig, err := newRestConfig(contextName)
     if err != nil {
         return nil, err
