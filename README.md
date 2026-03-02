@@ -29,6 +29,7 @@ SYNOPSIS
     ehvg k8s set-namespace [--namespace <name>]
     ehvg k8s show-namespace
     ehvg k8s get <resource> [name] [-n <namespace> | --all]
+    ehvg k8s exec [container] (--pod | --deployment) [--command <command>]
 
 DESCRIPTION
     ehvg prints a short message by default.
@@ -66,6 +67,13 @@ COMMANDS
         Use -n to override the selected namespace.
         Use --all to query all namespaces.
 
+    k8s exec
+        Execute a shell in a container within the selected context and namespace.
+        Use --pod to select a pod or --deployment to select a deployment.
+        Use --command to override the default shell (bash).
+        If container is omitted, you can select one from the available containers.
+        When using --deployment, a pod is selected automatically.
+
 FLAGS
     aws login --profile <name>
         Override the profile to use for login.
@@ -75,4 +83,13 @@ FLAGS
 
     k8s get --all
         Use all namespaces for this command.
+
+    k8s exec --pod
+        Choose a pod and exec into the selected container.
+
+    k8s exec --deployment
+        Choose a deployment and exec into the selected container.
+
+    k8s exec --command <command>
+        Override the default shell command (bash).
 ```

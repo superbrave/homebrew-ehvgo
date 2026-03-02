@@ -26,8 +26,14 @@ func newSetContextCommand() *cobra.Command {
         Short: "Select a Kubernetes context",
         Args:  cobra.NoArgs,
         RunE: func(cmd *cobra.Command, args []string) error {
+            contextName, namespace, err := loadKubeSelection()
+            if err != nil {
+                return err
+            }
+            printContextAndNamespace(cmd.OutOrStdout(), contextName, namespace)
+
             var contexts []string
-            err := ui.RunWithSpinner(os.Stderr, "Loading contexts", func() error {
+            err = ui.RunWithSpinner(os.Stderr, "Loading contexts", func() error {
                 var listErr error
                 contexts, listErr = listKubeContexts()
                 return listErr
@@ -50,8 +56,8 @@ func newSetContextCommand() *cobra.Command {
                 return err
             }
 
-            _, err = cmd.OutOrStdout().Write([]byte("Selected context: " + selected + "\n"))
-            return err
+            printSelection(cmd.OutOrStdout(), "Context", selected)
+            return nil
         },
     }
 
@@ -90,6 +96,8 @@ func promptForContext(contexts []string) (string, error) {
         Items:  contexts,
         Size:   10,
         Stdout: bellSkipper{},
+        Templates: selectTemplates(),
+        HideSelected: true,
     }
 
     _, result, err := selectPrompt.Run()

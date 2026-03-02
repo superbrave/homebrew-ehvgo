@@ -26,6 +26,12 @@ func newSetNamespaceCommand() *cobra.Command {
         Short: "Select a Kubernetes namespace",
         Args:  cobra.NoArgs,
         RunE: func(cmd *cobra.Command, args []string) error {
+            contextName, savedNamespace, err := loadKubeSelection()
+            if err != nil {
+                return err
+            }
+            printContextAndNamespace(cmd.OutOrStdout(), contextName, savedNamespace)
+
             namespace := strings.TrimSpace(namespaceFlag)
             if namespace == "" {
                 cfg, err := readConfig()
@@ -44,10 +50,12 @@ func newSetNamespaceCommand() *cobra.Command {
                 }
 
                 selectPrompt := promptui.Select{
-                    Label:  "Select Kubernetes namespace",
-                    Items:  namespaces,
-                    Size:   10,
-                    Stdout: bellSkipper{},
+                    Label:     "Select Kubernetes namespace",
+                    Items:     namespaces,
+                    Size:      10,
+                    Stdout:    bellSkipper{},
+                    Templates: selectTemplates(),
+                    HideSelected: true,
                 }
 
                 _, result, err := selectPrompt.Run()
@@ -78,8 +86,8 @@ func newSetNamespaceCommand() *cobra.Command {
                 return err
             }
 
-            _, err = cmd.OutOrStdout().Write([]byte("Selected namespace: " + namespace + "\n"))
-            return err
+            printSelection(cmd.OutOrStdout(), "Namespace", namespace)
+            return nil
         },
     }
 

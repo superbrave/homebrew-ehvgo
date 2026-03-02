@@ -30,8 +30,8 @@ func newShowContextCommand() *cobra.Command {
                 return errors.New("no context set; run 'ehvg k8s set-context'")
             }
 
-            _, err = cmd.OutOrStdout().Write([]byte(cfg.KubeContext + "\n"))
-            return err
+            printContextAndNamespace(cmd.OutOrStdout(), cfg.KubeContext, cfg.KubeNamespace)
+            return nil
         },
     }
 

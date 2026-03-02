@@ -20,6 +20,7 @@ func NewCommand() *cobra.Command {
     cmd.AddCommand(newSetNamespaceCommand())
     cmd.AddCommand(newShowNamespaceCommand())
     cmd.AddCommand(newGetCommand())
+    cmd.AddCommand(newExecCommand())
 
     return cmd
 }

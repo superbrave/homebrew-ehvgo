@@ -30,8 +30,8 @@ func newShowNamespaceCommand() *cobra.Command {
                 return errors.New("no namespace set; run 'ehvg k8s set-namespace'")
             }
 
-            _, err = cmd.OutOrStdout().Write([]byte(cfg.KubeNamespace + "\n"))
-            return err
+            printContextAndNamespace(cmd.OutOrStdout(), cfg.KubeContext, cfg.KubeNamespace)
+            return nil
         },
     }
 

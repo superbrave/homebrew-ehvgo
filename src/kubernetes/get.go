@@ -4,6 +4,7 @@ import (
     "errors"
     "os"
     "os/exec"
+    "strings"
 
     "ehvgo/src/ui"
 
@@ -22,6 +23,19 @@ func newGetCommand() *cobra.Command {
             if allNamespaces && namespaceOverride != "" {
                 return errors.New("cannot use --all and --namespace together")
             }
+
+            contextName, namespace, err := loadKubeSelection()
+            if err != nil {
+                return err
+            }
+
+            resolvedNamespace := namespace
+            if allNamespaces {
+                resolvedNamespace = "all"
+            } else if strings.TrimSpace(namespaceOverride) != "" {
+                resolvedNamespace = namespaceOverride
+            }
+            printContextAndNamespace(cmd.OutOrStdout(), contextName, resolvedNamespace)
 
             kubectlArgs := append([]string{"get"}, args...)
             resolvedArgs, err := BuildKubectlArgsWithOptions(kubectlArgs, namespaceOverride, allNamespaces)
