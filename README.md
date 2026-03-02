@@ -7,6 +7,27 @@ Command-line application built with Cobra.
 1. `cd /Users/jbleijenberg/repos/ehvgo`
 2. `go run .`
 
+## Homebrew (tap)
+
+Install from the custom tap (this repo contains the formula under `Formula/ehvg.rb`):
+
+1. `brew tap superbrave/ehvgo https://github.com/superbrave/ehvgo`
+2. `brew install ehvg`
+
+If you have a dedicated tap repo named `homebrew-ehvgo`, use:
+
+1. `brew tap superbrave/ehvgo`
+2. `brew install ehvg`
+
+### Update the formula for a new release
+
+1. Publish a GitHub release so the workflow uploads the release assets and `.sha256` files.
+2. Update `Formula/ehvg.rb` with the new version and the four SHA256 values:
+3. `curl -sL https://github.com/superbrave/ehvgo/releases/download/<version>/ehvg-darwin-arm64.sha256`
+4. `curl -sL https://github.com/superbrave/ehvgo/releases/download/<version>/ehvg-darwin-amd64.sha256`
+5. `curl -sL https://github.com/superbrave/ehvgo/releases/download/<version>/ehvg-linux-arm64.sha256`
+6. `curl -sL https://github.com/superbrave/ehvgo/releases/download/<version>/ehvg-linux-amd64.sha256`
+
 To run a specific command:
 
 1. `go run . aws login`
