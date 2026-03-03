@@ -1,4 +1,4 @@
-# ehvg
+# ehvgo
 
 Command-line application built with Cobra.
 
@@ -9,19 +9,19 @@ Command-line application built with Cobra.
 
 ## Homebrew (tap)
 
-Install from the custom tap (this repo contains the formula under `Formula/ehvg.rb`):
+Install from the custom tap (this repo contains the formula under `Formula/ehvgo.rb`):
 
 1. `brew tap superbrave/ehvgo`
-2. `brew install ehvg`
+2. `brew install ehvgo`
 
 ### Update the formula for a new release
 
 1. Publish a GitHub release so the workflow uploads the release assets and `.sha256` files.
-2. Update `Formula/ehvg.rb` with the new version and the four SHA256 values:
-3. `curl -sL https://github.com/superbrave/ehvgo/releases/download/<version>/ehvg-darwin-arm64.sha256`
-4. `curl -sL https://github.com/superbrave/ehvgo/releases/download/<version>/ehvg-darwin-amd64.sha256`
-5. `curl -sL https://github.com/superbrave/ehvgo/releases/download/<version>/ehvg-linux-arm64.sha256`
-6. `curl -sL https://github.com/superbrave/ehvgo/releases/download/<version>/ehvg-linux-amd64.sha256`
+2. Update `Formula/ehvgo.rb` with the new version and the four SHA256 values:
+3. `curl -sL https://github.com/superbrave/ehvgo/releases/download/<version>/ehvgo-darwin-arm64.sha256`
+4. `curl -sL https://github.com/superbrave/ehvgo/releases/download/<version>/ehvgo-darwin-amd64.sha256`
+5. `curl -sL https://github.com/superbrave/ehvgo/releases/download/<version>/ehvgo-linux-arm64.sha256`
+6. `curl -sL https://github.com/superbrave/ehvgo/releases/download/<version>/ehvgo-linux-amd64.sha256`
 
 To run a specific command:
 
@@ -33,22 +33,22 @@ To run a specific command:
 
 ```
 NAME
-    ehvg - command-line application built with Cobra
+    ehvgo - command-line application built with Cobra
 
 SYNOPSIS
-    ehvg
-    ehvg aws
-    ehvg aws login [--profile <name>]
-    ehvg k8s
-    ehvg k8s set-context
-    ehvg k8s show-context
-    ehvg k8s set-namespace [--namespace <name>]
-    ehvg k8s show-namespace
-    ehvg k8s get <resource> [name] [-n <namespace> | --all]
-    ehvg k8s exec [container] (--pod | --deployment) [--command <command>]
+    ehvgo
+    ehvgo aws
+    ehvgo aws login [--profile <name>]
+    ehvgo k8s
+    ehvgo k8s set-context
+    ehvgo k8s show-context
+    ehvgo k8s set-namespace [--namespace <name>]
+    ehvgo k8s show-namespace
+    ehvgo k8s get <resource> [name] [-n <namespace> | --all]
+    ehvgo k8s exec [container] (--pod | --deployment) [--command <command>]
 
 DESCRIPTION
-    ehvg prints a short message by default.
+    ehvgo prints a short message by default.
 
 COMMANDS
     aws

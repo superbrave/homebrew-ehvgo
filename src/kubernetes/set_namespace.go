@@ -103,7 +103,7 @@ func listNamespaces() ([]string, error) {
         return nil, err
     }
     if strings.TrimSpace(contextName) == "" {
-        return nil, errors.New("no context set; run 'ehvg k8s set-context'")
+        return nil, errors.New("no context set; run 'ehvgo k8s set-context'")
     }
 
     home, err := os.UserHomeDir()
