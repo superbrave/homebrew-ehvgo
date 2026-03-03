@@ -1,12 +1,9 @@
 package aws
 
 import (
-    "bufio"
     "errors"
     "os"
     "os/exec"
-    "path/filepath"
-    "sort"
     "strings"
 
     "ehvgo/src/ui"
@@ -45,11 +42,11 @@ func newLoginCommand() *cobra.Command {
                 if envProfile != "" {
                     profile = envProfile
                 } else {
-                    profiles, err := readAWSProfiles()
+                    profiles, err := ReadProfiles()
                     if err != nil {
                         return err
                     }
-                    selected, err := promptForProfile(profiles)
+                    selected, err := PromptForProfile(profiles)
                     if err != nil {
                         return err
                     }
@@ -94,72 +91,6 @@ func newLoginCommand() *cobra.Command {
 
     ui.AddHelpCommand(cmd)
     return cmd
-}
-
-func readAWSProfiles() ([]string, error) {
-    home, err := os.UserHomeDir()
-    if err != nil {
-        return nil, err
-    }
-
-    configPath := filepath.Join(home, ".aws", "config")
-    file, err := os.Open(configPath)
-    if err != nil {
-        return nil, err
-    }
-    defer file.Close()
-
-    profiles := make(map[string]struct{})
-    scanner := bufio.NewScanner(file)
-    for scanner.Scan() {
-        line := strings.TrimSpace(scanner.Text())
-        if !strings.HasPrefix(line, "[") || !strings.HasSuffix(line, "]") {
-            continue
-        }
-        section := strings.TrimSpace(line[1 : len(line)-1])
-        if section == "default" {
-            profiles["default"] = struct{}{}
-            continue
-        }
-        if strings.HasPrefix(section, "profile ") {
-            name := strings.TrimSpace(strings.TrimPrefix(section, "profile "))
-            if name != "" {
-                profiles[name] = struct{}{}
-            }
-        }
-    }
-
-    if err := scanner.Err(); err != nil {
-        return nil, err
-    }
-
-    if len(profiles) == 0 {
-        return nil, errors.New("no profiles found in ~/.aws/config")
-    }
-
-    list := make([]string, 0, len(profiles))
-    for name := range profiles {
-        list = append(list, name)
-    }
-    sort.Strings(list)
-
-    return list, nil
-}
-
-func promptForProfile(profiles []string) (string, error) {
-    selectPrompt := promptui.Select{
-        Label:  "Select AWS profile",
-        Items:  profiles,
-        Size:   10,
-        Stdout: bellSkipper{},
-    }
-
-    _, result, err := selectPrompt.Run()
-    if err != nil {
-        return "", err
-    }
-
-    return result, nil
 }
 
 func promptYesNo(question string, defaultYes bool) (bool, error) {
