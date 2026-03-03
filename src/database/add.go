@@ -88,16 +88,21 @@ func newConfigAddCommand() *cobra.Command {
             }
             printSelection(cmd.OutOrStdout(), "Jump host", label)
 
-            localPort, err := promptForLocalPort(selectedDb.Port)
-            if err != nil {
-                return handlePromptErr(err)
-            }
-            printSelection(cmd.OutOrStdout(), "Local port", strconv.Itoa(localPort))
-
             cfg, err := config.Read()
             if err != nil {
                 return err
             }
+
+            recommendedPort, err := recommendLocalPort(cfg, selectedDb.Port)
+            if err != nil {
+                return err
+            }
+
+            localPort, err := promptForLocalPort(recommendedPort)
+            if err != nil {
+                return handlePromptErr(err)
+            }
+            printSelection(cmd.OutOrStdout(), "Local port", strconv.Itoa(localPort))
 
             cfg.Databases[selectedDb.ID] = config.DatabaseConfig{
                 AwsProfile: profile,
@@ -191,6 +196,35 @@ func promptForLocalPort(defaultPort int) (int, error) {
     }
 
     return value, nil
+}
+
+func recommendLocalPort(cfg config.AppConfig, preferred int) (int, error) {
+    used := make(map[int]struct{})
+    for _, entry := range cfg.Databases {
+        if entry.LocalPort > 0 {
+            used[entry.LocalPort] = struct{}{}
+        }
+    }
+
+    if isAllowedPort(preferred, used) {
+        return preferred, nil
+    }
+
+    for port := 3307; port <= 65535; port++ {
+        if isAllowedPort(port, used) {
+            return port, nil
+        }
+    }
+
+    return 0, errors.New("no available local ports found")
+}
+
+func isAllowedPort(port int, used map[int]struct{}) bool {
+    if port <= 3306 || port > 65535 {
+        return false
+    }
+    _, exists := used[port]
+    return !exists
 }
 
 func listDatabases(ctx context.Context, profile string) ([]dbOption, error) {
