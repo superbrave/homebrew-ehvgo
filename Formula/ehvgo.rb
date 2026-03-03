@@ -1,7 +1,7 @@
 class Ehvgo < Formula
   desc "Command-line application for managing EHVG resources"
   homepage "https://github.com/superbrave/homebrew-ehvgo"
-  version "2.0.0"
+  version "2.1.0"
 
   on_macos do
     if Hardware::CPU.arm?
