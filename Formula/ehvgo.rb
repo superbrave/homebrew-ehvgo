@@ -6,20 +6,20 @@ class Ehvg < Formula
   on_macos do
     if Hardware::CPU.arm?
       url "https://github.com/superbrave/ehvgo/releases/download/#{version}/ehvg-darwin-arm64"
-      sha256 "5bea7b6f422766f3508534662a0bbefd254bd31ba08a61426e790d73a85b1fd7"
+      sha256 "65d41a67e1f3eb249f648fb4c5b7e31defe005a19fd20d7f2097a4724f38ee16"
     else
       url "https://github.com/superbrave/ehvgo/releases/download/#{version}/ehvg-darwin-amd64"
-      sha256 "70bdec4d22cac2f6438c5819ca1cf965fefcf2b4528200c8652428c4f47a764d"
+      sha256 "c4adc96625c2646d0c9b4ee0737e20d6a0f35725cca77f9a36ae81635c520956"
     end
   end
 
   on_linux do
     if Hardware::CPU.arm?
       url "https://github.com/superbrave/ehvgo/releases/download/#{version}/ehvg-linux-arm64"
-      sha256 "33bb43f61c21754836507bdf52fe34b680cc56f9fbf6875a9175d424039d791e"
+      sha256 "cf63b65efad9216bd4ab01e88fce1e15811e19111deaa25889cfec169d7ba05e"
     else
       url "https://github.com/superbrave/ehvgo/releases/download/#{version}/ehvg-linux-amd64"
-      sha256 "5ada982e8d7274c842a51b4ad28ed4a4c5fa1a56958116dd9a61a8852cd864a4"
+      sha256 "e7ecc013ee767e2d6d2b99c6852f761826841ca00cfaa04740454d9aac741279"
     end
   end
 
