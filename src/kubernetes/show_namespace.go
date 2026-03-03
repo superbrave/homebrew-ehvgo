@@ -27,7 +27,7 @@ func newShowNamespaceCommand() *cobra.Command {
             }
 
             if strings.TrimSpace(cfg.KubeNamespace) == "" {
-                return errors.New("no namespace set; run 'ehvg k8s set-namespace'")
+                return errors.New("no namespace set; run 'ehvgo k8s set-namespace'")
             }
 
             printContextAndNamespace(cmd.OutOrStdout(), cfg.KubeContext, cfg.KubeNamespace)

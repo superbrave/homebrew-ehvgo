@@ -12,11 +12,11 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-    Use:   "ehvg",
-    Short: "ehvg is a CLI application",
-    Long:  "ehvg is a CLI application built with Cobra.",
+    Use:   "ehvgo",
+    Short: "ehvgo is a CLI application",
+    Long:  "ehvgo is a CLI application built with Cobra.",
     Run: func(cmd *cobra.Command, args []string) {
-        fmt.Fprintln(cmd.OutOrStdout(), "ehvg CLI")
+        fmt.Fprintln(cmd.OutOrStdout(), "ehvgo CLI")
     },
 }
 

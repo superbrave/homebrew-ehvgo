@@ -17,10 +17,10 @@ func loadKubeSelectionRequired() (string, string, error) {
         return "", "", err
     }
     if strings.TrimSpace(contextName) == "" {
-        return "", "", errors.New("no context set; run 'ehvg k8s set-context'")
+        return "", "", errors.New("no context set; run 'ehvgo k8s set-context'")
     }
     if strings.TrimSpace(namespace) == "" {
-        return "", "", errors.New("no namespace set; run 'ehvg k8s set-namespace'")
+        return "", "", errors.New("no namespace set; run 'ehvgo k8s set-namespace'")
     }
 
     return contextName, namespace, nil

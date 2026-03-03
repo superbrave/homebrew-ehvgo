@@ -27,7 +27,7 @@ func newShowContextCommand() *cobra.Command {
             }
 
             if strings.TrimSpace(cfg.KubeContext) == "" {
-                return errors.New("no context set; run 'ehvg k8s set-context'")
+                return errors.New("no context set; run 'ehvgo k8s set-context'")
             }
 
             printContextAndNamespace(cmd.OutOrStdout(), cfg.KubeContext, cfg.KubeNamespace)
