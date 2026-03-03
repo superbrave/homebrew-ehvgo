@@ -4,6 +4,7 @@ import (
     "fmt"
     "io"
     "os"
+    "errors"
 
     "github.com/manifoldco/promptui"
     "golang.org/x/term"
@@ -48,4 +49,20 @@ func printSelection(out io.Writer, label, value string) {
     }
 
     fmt.Fprintf(out, "✔ %s: %s\n", label, value)
+}
+
+func handlePromptErr(err error) error {
+    if err == nil {
+        return nil
+    }
+    if errors.Is(err, promptui.ErrAbort) {
+        return nil
+    }
+    if errors.Is(err, promptui.ErrInterrupt) {
+        return nil
+    }
+    if errors.Is(err, promptui.ErrEOF) {
+        return nil
+    }
+    return err
 }

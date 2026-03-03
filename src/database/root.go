@@ -16,6 +16,7 @@ func NewCommand() *cobra.Command {
 
     ui.AddHelpCommand(cmd)
     cmd.AddCommand(newConfigCommand())
+    cmd.AddCommand(newSessionCommand())
 
     return cmd
 }

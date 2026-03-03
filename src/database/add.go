@@ -193,22 +193,6 @@ func promptForLocalPort(defaultPort int) (int, error) {
     return value, nil
 }
 
-func handlePromptErr(err error) error {
-    if err == nil {
-        return nil
-    }
-    if errors.Is(err, promptui.ErrAbort) {
-        return nil
-    }
-    if errors.Is(err, promptui.ErrInterrupt) {
-        return nil
-    }
-    if errors.Is(err, promptui.ErrEOF) {
-        return nil
-    }
-    return err
-}
-
 func listDatabases(ctx context.Context, profile string) ([]dbOption, error) {
     cfg, err := loadAWSConfig(ctx, profile)
     if err != nil {
